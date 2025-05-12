@@ -28,11 +28,13 @@
 </head>
 <body>
   <h1>초청장 생성기</h1>
-  <input type="text" id="company" placeholder="참가업체명">
-  <input type="text" id="booth" placeholder="부스번호">
+  <input type="text" id="company" placeholder="참가업체명 / Company Name">
+  <input type="text" id="booth" placeholder="부스번호 / Booth No.">
   <br>
-  <button onclick="drawText()">Generate Invitation</button>
-  <button onclick="downloadImage()">Download Invitation</button>
+  <button onclick="drawText()">Generate Invitation (KOR)</button>
+  <button onclick="drawTextEn()">Generate Invitation (ENG)</button>
+  <button onclick="downloadImage('kor')">Download KOR</button>
+  <button onclick="downloadImage('eng')">Download ENG</button>
   <br>
   <canvas id="invitationCanvas" width="613" height="786"></canvas>
 
@@ -40,30 +42,54 @@
     const canvas = document.getElementById('invitationCanvas');
     const ctx = canvas.getContext('2d');
 
-    const bgImage = new Image();
-    bgImage.src = 'cphik25-초청장.png';
-    bgImage.onload = () => {
-      ctx.drawImage(bgImage, 0, 0);
-    };
+    const korImage = new Image();
+    korImage.src = 'cphik25-초청장.png';
+    const engImage = new Image();
+    engImage.src = 'cphik25-invitation.png';
+
+    function isKorean(text) {
+      return /[\u3131-\uD79D]/ugi.test(text);
+    }
+
+    function drawSmartText(text, x, y) {
+      const korean = isKorean(text);
+      ctx.font = `14.5pt ${korean ? '"Noto Sans KR"' : '"Poppins"'}, sans-serif`;
+      ctx.fillText(text, x, y);
+    }
 
     function drawText() {
       const company = document.getElementById('company').value.trim();
       const booth = document.getElementById('booth').value.trim();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(bgImage, 0, 0);
+      ctx.drawImage(korImage, 0, 0);
 
       ctx.fillStyle = '#004040';
-      ctx.font = '14.5pt "Noto Sans KR Medium", sans-serif';
       ctx.textAlign = 'left';
 
-      // 정확한 텍스트 위치 삽입
-      ctx.fillText(company, 160, 619); // 참가업체명 위치
-      ctx.fillText(booth, 160, 660);   // 부스번호 위치
+      drawSmartText(company, 160, 619); // 참가업체명
+      drawSmartText(booth, 160, 660);   // 부스번호
     }
 
-    function downloadImage() {
+    function drawTextEn() {
+      const company = document.getElementById('company').value.trim();
+      const booth = document.getElementById('booth').value.trim();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(engImage, 0, 0);
+
+      ctx.fillStyle = '#004040';
+      ctx.textAlign = 'left';
+
+      drawSmartText(company, 160, 619); // 참가업체명
+      drawSmartText(booth, 160, 660);   // 부스번호
+    }
+
+    function downloadImage(lang) {
       const link = document.createElement('a');
-      link.download = 'cphik25-초청장.png';
+      if (lang === 'kor') {
+        link.download = 'cphik25-초청장.png';
+      } else {
+        link.download = 'cphik25-invitation.png';
+      }
       link.href = canvas.toDataURL('image/png');
       link.click();
     }
