@@ -11,7 +11,7 @@
     }
     canvas {
       border: 1px solid #ccc;
-      margin-top: 20px;
+      margin: 20px;
     }
     input {
       padding: 10px;
@@ -22,7 +22,13 @@
     button {
       padding: 10px 20px;
       font-size: 16px;
-      margin-top: 10px;
+      margin: 10px;
+    }
+    .canvas-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
     }
   </style>
 </head>
@@ -31,66 +37,76 @@
   <input type="text" id="company" placeholder="참가업체명 / Company Name">
   <input type="text" id="booth" placeholder="부스번호 / Booth No.">
   <br>
-  <button onclick="drawText()">Generate Invitation (KOR)</button>
-  <button onclick="drawTextEn()">Generate Invitation (ENG)</button>
+  <button onclick="drawText('kor')">Generate KOR</button>
+  <button onclick="drawText('eng')">Generate ENG</button>
   <button onclick="downloadImage('kor')">Download KOR</button>
   <button onclick="downloadImage('eng')">Download ENG</button>
-  <br>
-  <canvas id="invitationCanvas" width="613" height="786"></canvas>
+
+  <div class="canvas-wrapper">
+    <div>
+      <h3>국문 미리보기</h3>
+      <canvas id="canvasKOR" width="613" height="786"></canvas>
+    </div>
+    <div>
+      <h3>영문 미리보기</h3>
+      <canvas id="canvasENG" width="613" height="786"></canvas>
+    </div>
+  </div>
 
   <script>
-    const canvas = document.getElementById('invitationCanvas');
-    const ctx = canvas.getContext('2d');
+    const canvasKor = document.getElementById('canvasKOR');
+    const ctxKor = canvasKor.getContext('2d');
+    const canvasEng = document.getElementById('canvasENG');
+    const ctxEng = canvasEng.getContext('2d');
 
     const korImage = new Image();
     korImage.src = 'cphik25-초청장.png';
     const engImage = new Image();
     engImage.src = 'cphik25-invitation.png';
 
+    korImage.onload = () => ctxKor.drawImage(korImage, 0, 0);
+    engImage.onload = () => ctxEng.drawImage(engImage, 0, 0);
+
     function isKorean(text) {
       return /[\u3131-\uD79D]/ugi.test(text);
     }
 
-    function drawSmartText(text, x, y) {
+    function drawSmartText(ctx, text, x, y) {
       const korean = isKorean(text);
       ctx.font = `14.5pt ${korean ? '"Noto Sans KR"' : '"Poppins"'}, sans-serif`;
       ctx.fillText(text, x, y);
     }
 
-    function drawText() {
+    function drawText(lang) {
       const company = document.getElementById('company').value.trim();
       const booth = document.getElementById('booth').value.trim();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(korImage, 0, 0);
 
-      ctx.fillStyle = '#004040';
-      ctx.textAlign = 'left';
-
-      drawSmartText(company, 160, 619); // 참가업체명
-      drawSmartText(booth, 160, 660);   // 부스번호
-    }
-
-    function drawTextEn() {
-      const company = document.getElementById('company').value.trim();
-      const booth = document.getElementById('booth').value.trim();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(engImage, 0, 0);
-
-      ctx.fillStyle = '#004040';
-      ctx.textAlign = 'left';
-
-      drawSmartText(company, 160, 619); // 참가업체명
-      drawSmartText(booth, 160, 660);   // 부스번호
+      if (lang === 'kor') {
+        ctxKor.clearRect(0, 0, canvasKor.width, canvasKor.height);
+        ctxKor.drawImage(korImage, 0, 0);
+        ctxKor.fillStyle = '#004040';
+        ctxKor.textAlign = 'left';
+        drawSmartText(ctxKor, company, 160, 619);
+        drawSmartText(ctxKor, booth, 160, 660);
+      } else {
+        ctxEng.clearRect(0, 0, canvasEng.width, canvasEng.height);
+        ctxEng.drawImage(engImage, 0, 0);
+        ctxEng.fillStyle = '#004040';
+        ctxEng.textAlign = 'left';
+        drawSmartText(ctxEng, company, 160, 619);
+        drawSmartText(ctxEng, booth, 160, 660);
+      }
     }
 
     function downloadImage(lang) {
       const link = document.createElement('a');
       if (lang === 'kor') {
         link.download = 'cphik25-초청장.png';
+        link.href = canvasKor.toDataURL('image/png');
       } else {
         link.download = 'cphik25-invitation.png';
+        link.href = canvasEng.toDataURL('image/png');
       }
-      link.href = canvas.toDataURL('image/png');
       link.click();
     }
   </script>
