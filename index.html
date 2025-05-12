@@ -52,13 +52,13 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(bgImage, 0, 0);
 
-      ctx.fillStyle = '#000000';
-      ctx.font = '14px "Noto Sans KR", sans-serif';
+      ctx.fillStyle = '#004040';
+      ctx.font = '15pt "Noto Sans KR", sans-serif';
       ctx.textAlign = 'left';
 
-      // 텍스트 삽입 위치 ("코엑스 A홀"의 '코' 위치 기준 좌측 정렬)
-      ctx.fillText(company, 115, 715); // 참가업체명 위치
-      ctx.fillText(booth, 345, 715);   // 부스번호 위치
+      // 정확한 텍스트 위치 삽입
+      ctx.fillText(company, 160, 618); // 참가업체명 위치
+      ctx.fillText(booth, 160, 658);   // 부스번호 위치
     }
 
     function downloadImage() {
