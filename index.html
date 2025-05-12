@@ -30,6 +30,14 @@
       gap: 40px;
       flex-wrap: wrap;
     }
+    .preview-container {
+      text-align: center;
+    }
+    .download-link {
+      display: block;
+      margin-top: 5px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -39,16 +47,14 @@
   <br>
   <button onclick="drawText('kor')">Generate KOR</button>
   <button onclick="drawText('eng')">Generate ENG</button>
-  <button onclick="downloadImage('kor')">Download KOR</button>
-  <button onclick="downloadImage('eng')">Download ENG</button>
 
   <div class="canvas-wrapper">
-    <div>
-      <h3>Invitation KR ver.</h3>
+    <div class="preview-container">
+      <h3> Invitation KR ver. <a href="#" class="download-link" onclick="downloadImage('kor')">Download</a></h3>
       <canvas id="canvasKOR" width="613" height="786"></canvas>
     </div>
-    <div>
-      <h3>Invitation EN ver.</h3>
+    <div class="preview-container">
+      <h3> Invitation EN ver.  <a href="#" class="download-link" onclick="downloadImage('eng')">Download</a></h3>
       <canvas id="canvasENG" width="613" height="786"></canvas>
     </div>
   </div>
