@@ -3,129 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <title>Invitation Generator</title>
-  <style>
-    body {
-      text-align: center;
-      padding: 30px;
-      font-family: Arial, sans-serif;
-    }
-    canvas {
-      border: 1px solid #ccc;
-      margin: 20px;
-    }
-    input {
-      padding: 10px;
-      margin: 5px;
-      font-size: 16px;
-      width: 200px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin: 10px;
-    }
-    .canvas-wrapper {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      flex-wrap: wrap;
-    }
-    .preview-container {
-      text-align: center;
-    }
-    .download-link {
-      display: block;
-      margin-top: 5px;
-      font-size: 14px;
-    }
-  </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <h1>초청장 생성기</h1>
-  <input type="text" id="company" placeholder="참가업체명 / Company Name">
-  <input type="text" id="booth" placeholder="부스번호 / Booth No.">
-  <br>
-  <button onclick="drawText('kor')">Generate KOR</button>
-  <button onclick="drawText('eng')">Generate ENG</button>
-
-  <div class="canvas-wrapper">
-    <div class="preview-container">
-      <h3>국문 미리보기 <a href="#" class="download-link" onclick="downloadImage('kor')">Download</a></h3>
-      <canvas id="canvasKOR" width="613" height="786"></canvas>
-    </div>
-    <div class="preview-container">
-      <h3>영문 미리보기 <a href="#" class="download-link" onclick="downloadImage('eng')">Download</a></h3>
-      <canvas id="canvasENG" width="613" height="786"></canvas>
-    </div>
-  </div>
+  <input type="text" id="company" placeholder="참가업체명 / Company Name"><br>
+  <input type="text" id="booth" placeholder="부스번호 / Booth No."><br>
+  <button onclick="generate('eng')">Generate ENG PDF</button>
+  <button onclick="generate('kor')">Generate KOR PDF</button>
+  <canvas id="canvas" width="984" height="1380" style="display:none;"></canvas>
 
   <script>
-    const canvasKor = document.getElementById('canvasKOR');
-    const ctxKor = canvasKor.getContext('2d');
-    const canvasEng = document.getElementById('canvasENG');
-    const ctxEng = canvasEng.getContext('2d');
+    const { jsPDF } = window.jspdf;
 
-    const korImage = new Image();
-    korImage.crossOrigin = "anonymous";
-    korImage.src = 'cphik25-초청장.png';
+    const base64ENG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABMkAAAYjCAYAAADtEGhZAAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR4nOzdeViU1dsH8O/AwDAssgoKooggqKCguWvmklvmXmqL6S/TtHJLKyspsbJSc3lL0yyXyi333Nc0FyRTXEBBRAREQXYYhmWYef9ABp5hZhhwWIzv57q8rjnPc7ZnKB3uOec+IpVKtRxAAIiIiIiIiIiIiOqnDWIUB8h61fZMiIiIiIiIiIiIaslfJrU9AyIiIiIiIiIiotrGIBkRERERERER";
+    const base64KOR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABMkAAAYjCAYAAADtEGhZAAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR4nOzdeViU5foH8O8w7CC7oGwiohhoaS65Hc0lATMtrVwy0kpMM5fSMk3r6EktzaVTuaRp/nJLMXfENc1dVFREUUSURfZ9Z5bfHyMvM8wMDDAsHr6f6/I67/Js76snhnue+3lEcrn8GwBfg4iIiIiIiIiIqGk6bdDQIyAiIiIiIiIiImpoDJIREREREREREVGTxyAZERERERERERE1eQySERER";
 
-    const engImage = new Image();
-    engImage.crossOrigin = "anonymous";
-    engImage.src = 'cphik25-invitation.png';
-
-    korImage.onload = () => ctxKor.drawImage(korImage, 0, 0);
-    engImage.onload = () => ctxEng.drawImage(engImage, 0, 0);
-
-    function isKorean(text) {
-      return /[\u3131-\uD79D]/ugi.test(text);
+    function getTextY(lang) {
+      return lang === 'kor' ? { companyY: 1110, boothY: 1160 } : { companyY: 1100, boothY: 1150 };
     }
 
-    function drawSmartText(ctx, text, x, y) {
-      const korean = isKorean(text);
-      ctx.font = `bold 14.5pt ${korean ? 'sans-serif' : 'Arial'}`;
-      ctx.fillText(text, x, y);
-    }
-
-    function drawText(lang) {
+    function generate(lang) {
       const company = document.getElementById('company').value.trim();
       const booth = document.getElementById('booth').value.trim();
 
-      const ctx = lang === 'kor' ? ctxKor : ctxEng;
-      const canvas = lang === 'kor' ? canvasKor : canvasEng;
-      const image = lang === 'kor' ? korImage : engImage;
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(image, 0, 0);
+      const image = new Image();
+      const base64Image = lang === 'kor' ? base64KOR : base64ENG;
+      image.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = '#004040';
-      ctx.textAlign = 'left';
+        ctx.fillStyle = "#004040";
+        ctx.font = "bold 32px Arial";
+        ctx.textAlign = "left";
+        const pos = getTextY(lang);
+        ctx.fillText(company, 180, pos.companyY);
+        ctx.fillText(booth, 180, pos.boothY);
 
-      drawSmartText(ctx, company, 160, 619);
-      drawSmartText(ctx, booth, 160, 660);
-    }
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [canvas.width, canvas.height]
+        });
 
-    async function downloadImage(lang) {
-      const { jsPDF } = window.jspdf;
-      const canvas = lang === 'kor' ? canvasKor : canvasEng;
-      const imageData = canvas.toDataURL('image/png');
+        const url = lang === 'kor'
+          ? 'https://cphik.imasia-passport.com/ko/user/register?utm_source=invitation+letter&utm_medium=OEM'
+          : 'https://cphik.imasia-passport.com/en/user/register?utm_source=invitation+letter&utm_medium=OEM';
 
-      const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
-      });
-
-      doc.addImage(imageData, 'PNG', 0, 0, canvas.width, canvas.height);
-
-      const url = lang === 'kor'
-        ? 'https://cphik.imasia-passport.com/ko/user/register?utm_source=invitation+letter&utm_medium=OEM'
-        : 'https://cphik.imasia-passport.com/en/user/register?utm_source=invitation+letter&utm_medium=OEM';
-
-      doc.link(0, 0, canvas.width, canvas.height, { url });
-      doc.save(lang === 'kor' ? 'cphik25-초청장.pdf' : 'cphik25-invitation.pdf');
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.link(0, 0, canvas.width, canvas.height, { url });
+        pdf.save(lang === 'kor' ? 'cphik25-초청장.pdf' : 'cphik25-invitation.pdf');
+      };
+      image.src = base64Image;
     }
   </script>
 </body>
 </html>
-
