@@ -84,7 +84,7 @@
 
     function drawSmartText(ctx, text, x, y) {
       const korean = isKorean(text);
-      ctx.font = `16.5pt ${korean ? '"Noto Sans KR"' : '"Poppins"'}, sans-serif`;
+      ctx.font = `15pt ${korean ? '"Noto Sans KR"' : '"Poppins"'}, sans-serif`;
       ctx.fillText(text, x, y);
     }
 
@@ -122,12 +122,7 @@
       img.onload = () => {
         doc.addImage(img, 'PNG', 0, 0, 613, 786);
 
-        doc.setFont('Helvetica');
-        doc.setFontSize(16.5);
-        doc.setTextColor(0, 64, 64);
-        doc.text(company, 160, 619);
-        doc.text(booth, 160, 660);
-
+        // 링크 삽입
         const url = lang === 'kor'
           ? 'https://cphik.imasia-passport.com/ko/user/register?utm_source=invitation+letter&utm_medium=OEM'
           : 'https://cphik.imasia-passport.com/en/user/register?utm_source=invitation+letter&utm_medium=OEM';
@@ -139,6 +134,5 @@
   </script>
 </body>
 </html>
-
 
 
