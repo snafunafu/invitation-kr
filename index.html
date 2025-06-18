@@ -12,8 +12,8 @@
     canvas {
       border: 1px solid #ccc;
       margin: 20px;
-      max-width: 100%;
-      height: auto;
+      width: 306.5px;
+      height: 393px;
     }
     input {
       padding: 10px;
@@ -73,8 +73,8 @@
     const engImage = new Image();
     engImage.src = 'cphik25-invitation-en.png';
 
-    korImage.onload = () => ctxKor.drawImage(korImage, 0, 0);
-    engImage.onload = () => ctxEng.drawImage(engImage, 0, 0);
+    korImage.onload = () => ctxKor.drawImage(korImage, 0, 0, 613, 786);
+    engImage.onload = () => ctxEng.drawImage(engImage, 0, 0, 613, 786);
 
     function isKorean(text) {
       return /[\u3131-\uD79D]/ugi.test(text);
@@ -92,14 +92,14 @@
 
       if (lang === 'kor') {
         ctxKor.clearRect(0, 0, canvasKor.width, canvasKor.height);
-        ctxKor.drawImage(korImage, 0, 0);
+        ctxKor.drawImage(korImage, 0, 0, 613, 786);
         ctxKor.fillStyle = '#004040';
         ctxKor.textAlign = 'left';
         drawSmartText(ctxKor, company, 160, 619);
         drawSmartText(ctxKor, booth, 160, 660);
       } else {
         ctxEng.clearRect(0, 0, canvasEng.width, canvasEng.height);
-        ctxEng.drawImage(engImage, 0, 0);
+        ctxEng.drawImage(engImage, 0, 0, 613, 786);
         ctxEng.fillStyle = '#004040';
         ctxEng.textAlign = 'left';
         drawSmartText(ctxEng, company, 160, 619);
@@ -139,3 +139,4 @@
   </script>
 </body>
 </html>
+
