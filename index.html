@@ -26,12 +26,11 @@
     function generate(lang) {
       const company = document.getElementById('company').value.trim();
       const booth = document.getElementById('booth').value.trim();
-
       const canvas = document.getElementById('canvas');
       const ctx = canvas.getContext('2d');
-
       const image = new Image();
       const base64Image = lang === 'kor' ? base64KOR : base64ENG;
+
       image.onload = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
@@ -43,20 +42,23 @@
         ctx.fillText(company, 180, pos.companyY);
         ctx.fillText(booth, 180, pos.boothY);
 
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'px',
-          format: [canvas.width, canvas.height]
+        // ✅ Wait for canvas rendering to finish
+        requestAnimationFrame(() => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'px',
+            format: [canvas.width, canvas.height]
+          });
+
+          const url = lang === 'kor'
+            ? 'https://cphik.imasia-passport.com/ko/user/register?utm_source=invitation+letter&utm_medium=OEM'
+            : 'https://cphik.imasia-passport.com/en/user/register?utm_source=invitation+letter&utm_medium=OEM';
+
+          pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+          pdf.link(0, 0, canvas.width, canvas.height, { url });
+          pdf.save(lang === 'kor' ? 'cphik25-초청장.pdf' : 'cphik25-invitation.pdf');
         });
-
-        const url = lang === 'kor'
-          ? 'https://cphik.imasia-passport.com/ko/user/register?utm_source=invitation+letter&utm_medium=OEM'
-          : 'https://cphik.imasia-passport.com/en/user/register?utm_source=invitation+letter&utm_medium=OEM';
-
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-        pdf.link(0, 0, canvas.width, canvas.height, { url });
-        pdf.save(lang === 'kor' ? 'cphik25-초청장.pdf' : 'cphik25-invitation.pdf');
       };
       image.src = base64Image;
     }
