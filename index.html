@@ -88,24 +88,36 @@
       const company = document.getElementById('company').value.trim();
       const booth = document.getElementById('booth').value.trim();
 
-      if (lang === 'kor') {
-        ctxKor.clearRect(0, 0, canvasKor.width, canvasKor.height);
-        ctxKor.drawImage(korImage, 0, 0);
-        ctxKor.fillStyle = '#004040';
-        ctxKor.textAlign = 'left';
-        drawSmartText(ctxKor, company, 160, 619);
-        drawSmartText(ctxKor, booth, 160, 660);
-      } else {
-        ctxEng.clearRect(0, 0, canvasEng.width, canvasEng.height);
-        ctxEng.drawImage(engImage, 0, 0);
-        ctxEng.fillStyle = '#004040';
-        ctxEng.textAlign = 'left';
-        drawSmartText(ctxEng, company, 160, 619);
-        drawSmartText(ctxEng, booth, 160, 660);
-      }
+      const ctx = lang === 'kor' ? ctxKor : ctxEng;
+      const canvas = lang === 'kor' ? canvasKor : canvasEng;
+      const image = lang === 'kor' ? korImage : engImage;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, 0, 0);
+
+      ctx.fillStyle = '#004040';
+      ctx.textAlign = 'left';
+
+      drawSmartText(ctx, company, 160, 619);
+      drawSmartText(ctx, booth, 160, 660);
     }
 
     async function downloadImage(lang) {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit: 'px', format: [613, 786] });
 
+      const canvas = lang === 'kor' ? canvasKor : canvasEng;
+      const dataURL = canvas.toDataURL('image/png');
+
+      doc.addImage(dataURL, 'PNG', 0, 0, 613, 786);
+
+      const url = lang === 'kor'
+        ? 'https://cphik.imasia-passport.com/ko/user/register?utm_source=invitation+letter&utm_medium=OEM'
+        : 'https://cphik.imasia-passport.com/en/user/register?utm_source=invitation+letter&utm_medium=OEM';
+
+      doc.link(0, 0, 613, 786, { url });
+      doc.save(lang === 'kor' ? 'cphik25-초청장.pdf' : 'cphik25-invitation.pdf');
+    }
+  </script>
+</body>
+</html>
