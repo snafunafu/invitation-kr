@@ -42,6 +42,7 @@
       font-size: 14px;
     }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -83,7 +84,7 @@
 
     function drawSmartText(ctx, text, x, y) {
       const korean = isKorean(text);
-      ctx.font = `14.5pt ${korean ? '"Noto Sans KR"' : '"Poppins"'}, sans-serif`;
+      ctx.font = `16.5pt ${korean ? '"Noto Sans KR"' : '"Poppins"'}, sans-serif`;
       ctx.fillText(text, x, y);
     }
 
@@ -121,14 +122,12 @@
       img.onload = () => {
         doc.addImage(img, 'PNG', 0, 0, 613, 786);
 
-        // 텍스트 추가
         doc.setFont('Helvetica');
-        doc.setFontSize(14.5);
-        doc.setTextColor(0, 64, 64); // #004040
+        doc.setFontSize(16.5);
+        doc.setTextColor(0, 64, 64);
         doc.text(company, 160, 619);
         doc.text(booth, 160, 660);
 
-        // 링크 삽입
         const url = lang === 'kor'
           ? 'https://cphik.imasia-passport.com/ko/user/register?utm_source=invitation+letter&utm_medium=OEM'
           : 'https://cphik.imasia-passport.com/en/user/register?utm_source=invitation+letter&utm_medium=OEM';
@@ -140,5 +139,6 @@
   </script>
 </body>
 </html>
+
 
 
