@@ -67,8 +67,11 @@
     const ctxEng = canvasEng.getContext('2d');
 
     const korImage = new Image();
+    korImage.crossOrigin = "anonymous";
     korImage.src = 'cphik25-초청장.png';
+
     const engImage = new Image();
+    engImage.crossOrigin = "anonymous";
     engImage.src = 'cphik25-invitation.png';
 
     korImage.onload = () => ctxKor.drawImage(korImage, 0, 0);
@@ -80,7 +83,7 @@
 
     function drawSmartText(ctx, text, x, y) {
       const korean = isKorean(text);
-      ctx.font = `14.5pt ${korean ? '"Noto Sans KR"' : '"Poppins"'}, sans-serif`;
+      ctx.font = `bold 14.5pt ${korean ? 'sans-serif' : 'Arial'}`;
       ctx.fillText(text, x, y);
     }
 
@@ -104,20 +107,25 @@
 
     async function downloadImage(lang) {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'px', format: [613, 786] });
-
       const canvas = lang === 'kor' ? canvasKor : canvasEng;
-      const dataURL = canvas.toDataURL('image/png');
+      const imageData = canvas.toDataURL('image/png');
 
-      doc.addImage(dataURL, 'PNG', 0, 0, 613, 786);
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      doc.addImage(imageData, 'PNG', 0, 0, canvas.width, canvas.height);
 
       const url = lang === 'kor'
         ? 'https://cphik.imasia-passport.com/ko/user/register?utm_source=invitation+letter&utm_medium=OEM'
         : 'https://cphik.imasia-passport.com/en/user/register?utm_source=invitation+letter&utm_medium=OEM';
 
-      doc.link(0, 0, 613, 786, { url });
+      doc.link(0, 0, canvas.width, canvas.height, { url });
       doc.save(lang === 'kor' ? 'cphik25-초청장.pdf' : 'cphik25-invitation.pdf');
     }
   </script>
 </body>
 </html>
+
