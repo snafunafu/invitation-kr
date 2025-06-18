@@ -1,4 +1,4 @@
-<!DOCTYPE html>More actions
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -39,10 +39,10 @@
       font-size: 14px;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <h1>초청장 생성기</h1>
-  <h1>초청장 생성기 Invitation Letter Generator</h1>
   <input type="text" id="company" placeholder="참가업체명 / Company Name">
   <input type="text" id="booth" placeholder="부스번호 / Booth No.">
   <br>
@@ -51,11 +51,11 @@
 
   <div class="canvas-wrapper">
     <div class="preview-container">
-      <h3> Invitation KR ver. <a href="#" class="download-link" onclick="downloadImage('kor')">Download</a></h3>
+      <h3>국문 미리보기 <a href="#" class="download-link" onclick="downloadImage('kor')">Download</a></h3>
       <canvas id="canvasKOR" width="613" height="786"></canvas>
     </div>
     <div class="preview-container">
-      <h3> Invitation EN ver.  <a href="#" class="download-link" onclick="downloadImage('eng')">Download</a></h3>
+      <h3>영문 미리보기 <a href="#" class="download-link" onclick="downloadImage('eng')">Download</a></h3>
       <canvas id="canvasENG" width="613" height="786"></canvas>
     </div>
   </div>
@@ -105,17 +105,24 @@
       }
     }
 
-    function downloadImage(lang) {
-      const link = document.createElement('a');
-      if (lang === 'kor') {
-        link.download = 'cphik25-초청장.png';
-        link.href = canvasKor.toDataURL('image/png');
-      } else {
-        link.download = 'cphik25-invitation.png';
-        link.href = canvasEng.toDataURL('image/png');
-      }
-      link.click();
+    async function downloadImage(lang) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'px', format: [613, 786] });
+      const img = new Image();
+      img.src = lang === 'kor' ? 'cphik25-초청장@2x.png' : 'cphik25-invitation@2x.png';
+
+      img.onload = () => {
+        doc.addImage(img, 'PNG', 0, 0, 613, 786);
+
+        const url = lang === 'kor'
+          ? 'https://cphik.imasia-passport.com/ko/user/register?utm_source=invitation+letter&utm_medium=OEM'
+          : 'https://cphik.imasia-passport.com/en/user/register?utm_source=invitation+letter&utm_medium=OEM';
+
+        doc.link(0, 0, 613, 786, { url });
+        doc.save(lang === 'kor' ? 'cphik25-초청장.pdf' : 'cphik25-invitation.pdf');
+      };
     }
   </script>
-</body>More actions
+</body>
 </html>
+
